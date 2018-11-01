@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
 				printf("Usage:\n");
 				printf("./oss  runs the program with default settings.\n");
 				printf("./oss -l fileName changes fileName\n");
-				printf("./oss -s x	runs the amount of processes default is 19\n");
+				printf("./oss -s x	runs the amount of processes default is 10\n");
 				printf("./oss -h  displays help info\n");
 			exit(0);
 			break;
@@ -130,11 +130,6 @@ int main(int argc, char* argv[]) {
 					fprintf(stderr,"Invalid number of user processes (%s) entered. Minimum is 1. Maximum is 19. Integers only.\n", s);
 					exit(1);
 				}
-				
-				if(s == 1)
-					printf("oss will spawn %i user process.\n", s);
-				else if(s != 19)
-					printf("oss will spawn %i user processes.\n", s);
 			break;
 			// filename config switch
 			case 'l':
@@ -278,11 +273,11 @@ void setup_mem(){
 	
 	// allocate shared memory for PCB
 	if((segment_id = shmget(IPC_PRIVATE, (sizeof(PCB)*18), S_IRUSR | S_IWUSR)) ==  -1){
-		fprintf(stderr, "Failed to get shared memory segment for PCBs.\n");
+		fprintf(stderr, "Failed to get shared memory  for PCBs.\n");
 	exit(1);
 	}
 	else
-		printf("\nShared memory segment for PCBs created with ID: %i.\n", segment_id);
+		printf("\nShared memory  for PCBs created with ID: %i.\n", segment_id);
 	
 	// attach to newly allocated shared memory and notify status
 	if((pcb = (PCB *)shmat(segment_id, NULL, 0)) == (void *) -1){
@@ -290,7 +285,7 @@ void setup_mem(){
 	exit(1);
 	}
 	else
-	printf("Shared memory segment %d for PCBs attached at address %p.\n\n", segment_id, pcb);
+	printf("Shared memory  %d for PCBs attached at address %p.\n\n", segment_id, pcb);
 	
 	// allocate shared memory segment for number_waiting
 	if((segment2_id = shmget(IPC_PRIVATE, (sizeof(int)), S_IRUSR | S_IWUSR)) ==  -1){
@@ -298,11 +293,11 @@ void setup_mem(){
 	exit(1);
 	}
 	else
-		printf("Shared memory segment for number_waiting created with ID: %i.\n", segment2_id);
+		printf("Shared memory  for number_waiting created with ID: %i.\n", segment2_id);
 
 	// attach to newly allocated shared memory and notify status
 	if((number_waiting = (int *)shmat(segment2_id, NULL, 0)) == (void *) -1){
-		fprintf(stderr,"Failed to attach to shared memory segment %i for number_waiting.\n", segment2_id);
+		fprintf(stderr,"Failed to attach to shared memory  %i for number_waiting.\n", segment2_id);
 	exit(1);
 	}
 	else
@@ -310,7 +305,7 @@ void setup_mem(){
 	
 	// allocate shared memory segment for clock
 	if((segment3_id = shmget(IPC_PRIVATE, (sizeof(ClockTime)), S_IRUSR | S_IWUSR)) ==  -1){
-		fprintf(stderr, "Failed to get shared memory segment for logical clock.\n");
+		fprintf(stderr, "Failed to get shared memory  for logical clock.\n");
 	exit(1);
 	}
 	else
@@ -318,11 +313,11 @@ void setup_mem(){
 
 	// attach to newly allocated shared memory and notify status
 	if((current_time = (ClockTime *)shmat(segment3_id, NULL, 0)) == (void *) -1){
-		fprintf(stderr,"Failed to attach to shared memory segment %i for logical clock.\n", segment3_id);
+		fprintf(stderr,"Failed to attach to shared memory  %i for logical clock.\n", segment3_id);
 	exit(1);
 	}
 	else
-	printf("Shared memory segment %d for logical clock attached at address %p.\n\n", segment3_id, current_time);
+	printf("Shared memory %d for logical clock attached at address %p.\n\n", segment3_id, current_time);
 	
 }
 
@@ -340,14 +335,14 @@ void cleanup(){
 	if(shmdt(pcb) == -1){
 		fprintf(stderr, "Unable to detach PCB shared memory %d @ %p.\n", segment_id, pcb);
 	}
-	else	// report success
+	else	//report success
 		printf("PCB memory successfully detached.\n");
-	// remove segment
+	//remove segment
 	if((shmctl(segment_id, IPC_RMID, NULL)) == -1){
 		fprintf(stderr,"Failed to release PCB shared memory segment.\n");
 	}
-	else	// report success
-		printf("PCB shared memory segment successfully released.\n\n");
+	else	
+		printf("PCB shared memory  successfully released.\n\n");
 
 	// detach and release number_waiting shared memory
 	printf("Detaching and releasing number_waiting shared memory segment %d and freeing up address %p.\n", segment2_id, number_waiting);
@@ -355,13 +350,13 @@ void cleanup(){
 	if(shmdt(number_waiting) == -1){
 		fprintf(stderr, "Unable to detach number_waiting shared memory %d @ %p.\n", segment2_id, number_waiting);
 	}
-	else	// report success
+	else	
 		printf("number_waiting memory successfully detached.\n");
-	// remove segment
+	
 	if((shmctl(segment2_id, IPC_RMID, NULL)) == -1){
 		fprintf(stderr,"Failed to release number_waiting shared memory segment.\n");
 	}
-	else	// report success
+	else	
 		printf("number_waiting shared memory segment successfully released.\n\n");
 
 	// detach and release ClockTime shared memory
@@ -370,13 +365,13 @@ void cleanup(){
 	if(shmdt(current_time) == -1){
 		fprintf(stderr, "Unable to detach logical clock shared memory %d @ %p.\n", segment3_id, current_time);
 	}
-	else	// report success
+	else	
 		printf("Logical clock memory successfully detached.\n");
-	// remove segment
+	
 	if((shmctl(segment3_id, IPC_RMID, NULL)) == -1){
 		fprintf(stderr,"Failed to release logical clock shared memory segment.\n");
 	}
-	else	// report success
+	else
 		printf("Logical clock shared memory segment successfully released.\n\n");
 
 exit(0);
@@ -532,6 +527,15 @@ void schedule(){
 				if((pcb[shortest_index].cycles == 2))
 					pcb[shortest_index].priority++;
 				*turn_to = 1;
+				
+				/*
+				set_clock(pcb[shortest_index].burst_time);
+				if((pcb[shortest_index].cycles == 3))
+					pcb[shortest_index].priority++;
+				if(pcb[shortest_index].cycles < 3)
+					pcb[shortest_index].priority--;
+				*turn_to = 2;
+				*/
 			}
 			else
 				*turn_to = 1;
