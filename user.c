@@ -135,6 +135,64 @@ wait:	while(pcb[who].status != IN_PROGRESS){
 			skip = 1;
 		}
 		
+		}
+		
+		if(skip == 0 && quantum_use == 0 && ((pcb[who].quantum * .001) < pcb[who].time_left)){
+
+			int partial = (rand() % pcb[who].quantum);
+			fprintf(stderr, "Job %i running partial quantum %11.9f < time requirement with PID %i.\n", who, (pcb[who].quantum * .001), myId);
+			if(pcb[who].start_time == 0)
+				pcb[who].start_time = current_time->total;
+			pcb[who].burst_time = (partial * .001);
+			pcb[who].time_left -= (partial * .001);
+			pcb[who].time_spent += (partial * .001);
+			pcb[who].status = IN_QUEUE;
+			pcb[who].cycles++;
+			skip = 1;
+			goto wait;
+		}
+		if(skip == 0 && quantum_use == 1 && ((pcb[who].quantum * .001) >= pcb[who].time_left)){
+			fprintf(stderr, "Job %i running full quantum %11.9f >= time requirement with PID %i.\n", who, (pcb[who].quantum * .001), myId);
+			if(pcb[who].start_time == 0)
+				pcb[who].start_time = current_time->total;
+			pcb[who].burst_time = pcb[who].time_left;
+			pcb[who].time_spent += pcb[who].time_left;
+			pcb[who].time_left = 0;
+			pcb[who].status = COMPLETE;
+			pcb[who].end_time = current_time->total;
+			*number_waiting = (*number_waiting - 1);
+			skip = 1;
+		}
+		
+		}
+		
+		if(skip == 0 && quantum_use == 0 && ((pcb[who].quantum * .001) < pcb[who].time_left)){
+
+			int partial = (rand() % pcb[who].quantum);
+			fprintf(stderr, "Job %i running partial quantum %11.9f < time requirement with PID %i.\n", who, (pcb[who].quantum * .001), myId);
+			if(pcb[who].start_time == 0)
+				pcb[who].start_time = current_time->total;
+			pcb[who].burst_time = (partial * .001);
+			pcb[who].time_left -= (partial * .001);
+			pcb[who].time_spent += (partial * .001);
+			pcb[who].status = IN_QUEUE;
+			pcb[who].cycles++;
+			skip = 1;
+			goto wait;
+		}
+		if(skip == 0 && quantum_use == 1 && ((pcb[who].quantum * .001) >= pcb[who].time_left)){
+			fprintf(stderr, "Job %i running full quantum %11.9f >= time requirement with PID %i.\n", who, (pcb[who].quantum * .001), myId);
+			if(pcb[who].start_time == 0)
+				pcb[who].start_time = current_time->total;
+			pcb[who].burst_time = pcb[who].time_left;
+			pcb[who].time_spent += pcb[who].time_left;
+			pcb[who].time_left = 0;
+			pcb[who].status = COMPLETE;
+			pcb[who].end_time = current_time->total;
+			*number_waiting = (*number_waiting - 1);
+			skip = 1;
+		}
+		
 		if(skip == 0 && quantum_use == 0 && ((pcb[who].quantum * .001) >= pcb[who].time_left)){
 			// calculate and store partial quantum amount
 			int partial = (rand() % pcb[who].quantum);
