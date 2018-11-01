@@ -4,6 +4,7 @@
 
 int main(int argc, char* argv[])
 {
+  int input, s, l, t;
   while ((input = getopt (argc, argv, "hs:l:t:")) != -1)
 	
 	{
@@ -61,6 +62,6 @@ int main(int argc, char* argv[])
 	
 	 }
 
-
+}
 return 0;//main
 }//main
