@@ -1,2 +1,7 @@
+* 2ed7e97 : updated oss default file rename doesn't work
+* 68c3e9d : seg fault when trying dif value for s
+* 9df4f46 : updated user clock
+* 1553423 : oss creating queue
+* ef8f206 : updated oss shared memory, signal handlers and cleanup. user able to get to shared memory and send back
 * 38933a0 : user getopt options updated
 * 95dbe3e : created files

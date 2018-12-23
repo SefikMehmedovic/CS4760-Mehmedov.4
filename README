@@ -1,0 +1,18 @@
+Sefik Mehmedovic
+CS 4760 OS
+Program 4 -- Process Scheduling --
+
+---------------------------------------------------------------
+1.compile by running 'make'
+2.to run the program './oss' which will run default 
+3. to see help options './oss -h' 
+---------------------------------------------------------------
+./oss  runs the program with default settings.\n
+./oss -l fileName changes fileName\n
+./oss -s x	runs the amount of processes default is 10\n
+./oss -h  displays help info\n
+---------------------------------------------------------------
+Issues:
+./oss -l does not rename the file
+
+Seg fault sometimes when ./oss -s is not default value of 10... 
